@@ -2,21 +2,26 @@
 # PCs 1-4, labeling 1kG samples by population & assigning all other samples to population='This Study'
 # Additionally, generate plot w/ 95% confidence ellipses drawn around each 1kG population.
 
-library(reshape2)
+suppressMessages(library(reshape2))
+suppressMessages(library(argparser))
+p = arg_parser('Read in the plink .eigenvec & .eigenval files produced by merge_1kg_geno_PCA.sh and use the known ancestry associated with the 1kg samples to assign ancestry to the merged in data we supplied.')
+p = add_argument(p, 'pcadir', help='Base path containing the PCA results')
+p = add_argument(p, 'pcafile', help='Base file name of PCA results')
+p = add_argument(p, 'kgpopfile', help='1kg phase 3 annotation file containing the following 3 columns: FID>----IID>----ancestry. The ancestry values in column 3 are the labels to estimate in our data. For files prepared by me, the name of that column may vary, so this script reassigns the column 3 name to \'ancestry\'.')
+p = add_argument(p,'--conflevel', type='numeric', default=0.95, help='Confidence level to use when drawing ellipse to estimate sample ancestry. Default: 0.95')
+args = parse_args(p)
 
-outpath='/sc/arion/projects/EPIASD/splicingQTL/output/geno_wasp/geno_PCA/'
-setwd(outpath)
+pcadir = args$pcadir
+pcafile = args$pcafile
+kgpopfile = args$kgpopfile 
+conflevel = args$conflevel 
+
+outdir=pcadir
+
+setwd(outdir)
 options(scipen=100, digits=3)
 
-basepath='/sc/arion/projects/EPIASD/splicingQTL/output/geno_wasp/geno_PCA/' # This is the path where the PCA output lives
-basefile='Capstone4.sel.idsync.2allele.maf01.mind05.geno05.hwe1e-6.deduped.COPY.1kg_phase3_bestMAF' # This is the base name of the .eigenval & .eigenvec files
-meta1kgfile='/sc/arion/projects/EPIASD/splicingQTL/scripts/pre_fastQTL/PCA/1kg_phase3_samplesuperpopinferreddata.txt' # Metadata file listing the ethnicity of each 1kg sample in column 3. For files prepared by me, the name of the column may vary, so this script reassigns the column name to 'ancestry'.
-#estimate_ancestry=TRUE # Should an ancestry estimation be returned? This will also add ancestry ellipses to the plots written by ggbiplot() # Not used currently--generate these files always
-
 ########################################################
-
-# Confidence level to use when drawing ellipse to estimate sample ancestry
-conflevel=0.95
 
 # Plot params
 pwidth = 13
@@ -74,14 +79,14 @@ est_ancestry = function(eigenvec,g,x,y,conflevel,savepath){
 ##############################################################
 
 # read in the eigenvectors, produced in PLINK
-eigenvec = data.frame(read.table(paste0(basepath,basefile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
-eigenval = t(data.frame(read.table(paste0(basepath,basefile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
+eigenvec = data.frame(read.table(paste0(pcadir,pcafile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
+eigenval = t(data.frame(read.table(paste0(pcadir,pcafile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
 rownames(eigenvec) = eigenvec[,2]
 eigenvec = eigenvec[,3:ncol(eigenvec)]
 colnames(eigenvec) = colnames(eigenval) = paste0('PC', c(1:20))
 
 # read in the 1kg metadata & read population from 3rd column (col name varies between metadata files I prepared)
-ped = data.frame(read.table(meta1kgfile, header=TRUE, skip=0, sep='\t'))
+ped = data.frame(read.table(kgpopfile, header=TRUE, skip=0, sep='\t'))
 colnames(ped)[3] = 'ancestry'
 ped = ped[which(ped$IID %in% rownames(eigenvec)), ]
 rownames(ped) = ped$IID
@@ -95,7 +100,6 @@ rbind(
   Cumulative = cumsum(eigenval)/sum(eigenval)
 )
 
-# Read in metadata
 # Add ancestry column to eigenvalues dataframe
 eigenvec = cbind(eigenvec, ped[, 'ancestry'][match(rownames(eigenvec), rownames(ped))])
 colnames(eigenvec)[21] = 'ancestry'
@@ -125,10 +129,10 @@ PCs = seq(1,npcs,1)
 pc_pairs = lapply(PCs,function(x){
   lapply(PCs, function(y,x){
     if(x!=y){
-      g=ggbiplot(eigenvec,x,y,outpath)
+      g=ggbiplot(eigenvec,x,y,outdir)
       if(x==2 & y==1){
-        annot_eigenvec=est_ancestry(eigenvec,g,x,y,conflevel,outpath)
-        write.table(annot_eigenvec,paste0(outpath,basefile,'.eigenvec_ancestry_est'),sep='\t',quote=F)
+        annot_eigenvec=est_ancestry(eigenvec,g,x,y,conflevel,outdir)
+        write.table(annot_eigenvec,paste0(outdir,pcafile,'.eigenvec_ancestry_est'),sep='\t',quote=F)
         return(annot_eigenvec)
       }
     }
@@ -161,4 +165,4 @@ anc_est = anc %>% group_by(ID) %>% summarize(ancestry_est = paste0(sort(unique(e
 annot_eigenvec$ID = row.names(annot_eigenvec)
 ancestry_estimated = filter(annot_eigenvec,ancestry=='This study') %>% left_join(anc_est,by='ID')
 
-write.table(ancestry_estimated,paste0(outpath,basefile,'.ancestry_est'),sep='\t',quote=F)
+write.table(ancestry_estimated,paste0(outdir,pcafile,'.ancestry_est'),sep='\t',quote=F)

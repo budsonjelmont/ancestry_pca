@@ -6,15 +6,24 @@
 ml plink
 ml python/3.7.3 # Used for py script to compare related individuals & generate list of relatives to drop
 
-datdir=/sc/arion/projects/EPIASD/splicingQTL/output/geno_wasp/geno_PCA
-name=Capstone4.sel.idsync.2allele.maf01.mind05.geno05.hwe1e-6.deduped.COPY
-refdir=/sc/arion/scratch/belmoj01/QTL_VCF
-refname=all_phase3.dedupeByPos_bestMAF
-reference=1kg_phase3_bestMAF
-highld=/sc/hydra/projects/pintod02c/reference-databases/high_LD_regions/high_ld_and_autsomal_regions_hg19.txt
-popfile=/sc/hydra/projects/pintod02c/1kg_phase3/1kg_phase3_samplesuperpopinferreddata-FID0.txt
+datdir=$1
+name=$2
+refdir=$3
+refname=$4
+reference=$5
+highld=$6
+popfile=$7
+pyscrpath=$8
 
-pyscrpath=/sc/arion/projects/EPIASD/ancestry_pca/pca
+#datdir=/sc/arion/projects/EPIASD/splicingQTL/output/geno_wasp/geno_PCA
+#name=Capstone4.sel.idsync.2allele.maf01.mind05.geno05.hwe1e-6.deduped.COPY
+#refdir=/sc/arion/scratch/belmoj01/QTL_VCF
+#refname=all_phase3.dedupeByPos_bestMAF
+#reference=1kg_phase3_bestMAF
+#highld=/sc/hydra/projects/pintod02c/reference-databases/high_LD_regions/high_ld_and_autsomal_regions_hg19.txt
+#popfile=/sc/hydra/projects/pintod02c/1kg_phase3/1kg_phase3_samplesuperpopinferreddata-FID0.txt
+
+#pyscrpath=/sc/arion/projects/EPIASD/ancestry_pca/pca
 
 # QC parameters
 ldwindow=50
