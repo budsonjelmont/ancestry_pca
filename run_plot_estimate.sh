@@ -5,8 +5,8 @@ datdir=/sc/arion/scratch/belmoj01/pca_test/
 datfile=Capstone4.sel.idsync.2allele.maf01.mind05.geno05.hwe1e-6.deduped.COPY
 refdir=/sc/arion/scratch/belmoj01/QTL_VCF
 reffile=all_phase3.dedupeByPos_bestMAF
-highld=/sc/hydra/projects/pintod02c/reference-databases/high_LD_regions/high_ld_and_autsomal_regions_hg19.txt
-kgpopfile=/sc/hydra/projects/pintod02c/1kg_phase3/1kg_phase3_samplesuperpopinferreddata-FID0.txt
+highld=/sc/arion/projects/pintod02c/reference-databases/high_LD_regions/high_ld_and_autsomal_regions_hg19.txt
+kgpopfile=/sc/arion/projects/pintod02c/1kg_phase3/population/1kg_phase3_samplesuperpopinferreddata-FID0.txt
 
 pcafile=$datfile.$reffile
 

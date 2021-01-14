@@ -3,8 +3,8 @@
 # Merge plink formatted target dataset file w/ 1kG reference (also in plink binary fileset format)
 # Remove linked sited first, then QC both datasets. Align SNPs common to both datasets, & check for chr/pos mismatches & allele flips. Also remove related individuals (pi_hat > 0.2) in the reference (you should've done this already on the target dataset though). 
 # Based on vignette here: https://meyer-dfflab-cshl.github.io/plinkQC/articles/AncestryCheck.html
-ml plink
-ml python/3.7.3 # Used for py script to compare related individuals & generate list of relatives to drop
+module load plink
+module load python/3.7.3 # Used for py script to compare related individuals & generate list of relatives to drop
 
 datdir=$1
 name=$2
@@ -14,16 +14,6 @@ highld=$5
 popfile=$6
 pyscrpath=$7
 pcafile=$8
-
-#datdir=/sc/arion/projects/EPIASD/splicingQTL/output/geno_wasp/geno_PCA
-#name=Capstone4.sel.idsync.2allele.maf01.mind05.geno05.hwe1e-6.deduped.COPY
-#refdir=/sc/arion/scratch/belmoj01/QTL_VCF
-#refname=all_phase3.dedupeByPos_bestMAF
-#reference=1kg_phase3_bestMAF
-#highld=/sc/hydra/projects/pintod02c/reference-databases/high_LD_regions/high_ld_and_autsomal_regions_hg19.txt
-#popfile=/sc/hydra/projects/pintod02c/1kg_phase3/1kg_phase3_samplesuperpopinferreddata-FID0.txt
-
-#pyscrpath=/sc/arion/projects/EPIASD/ancestry_pca/pca
 
 # QC parameters
 ldwindow=50
@@ -133,10 +123,3 @@ plink --bfile $datdir/$name.merge.$refname \
       --genome \
       --out $datdir/$pcafile #--within $popfile --pca-cluster-names AFR SAS EAS EUR AMR # See section Dimension reduction here: https://www.cog-genomics.org/plink/1.9/strat
 mv $datdir/$pcafile.log $datdir/plink_log
-
-#plink --bfile $datdir/$name.merge.$refname \
-#      --read-genome $datdir/$pcafile.genome \
-#      --cluster \
-#      --ppc 1e-3 \
-#      --mds-plot 2 \
-#      --out $datdir/$pcafile

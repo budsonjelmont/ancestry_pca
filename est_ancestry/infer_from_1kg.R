@@ -18,8 +18,8 @@ options(scipen=100, digits=3)
 ##############################################################
 
 # read in the eigenvectors, produced in PLINK
-eigenvec = data.frame(read.table(paste0(pcadir,pcafile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
-eigenval = t(data.frame(read.table(paste0(pcadir,pcafile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
+eigenvec = data.frame(read.table(paste0(pcadir,'/',pcafile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
+eigenval = t(data.frame(read.table(paste0(pcadir,'/',pcafile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
 rownames(eigenvec) = eigenvec[,2]
 eigenvec = eigenvec[,3:ncol(eigenvec)]
 colnames(eigenvec) = colnames(eigenval) = paste0('PC', c(1:20))
@@ -56,4 +56,4 @@ knn_fit = train(ancestry ~., data = train, method = 'knn',
 est = predict(knn_fit, newdata = test)
 # Add estimated ancestry to test data and write out results
 test$ancestry = est
-write.table(test,paste0(pcadir,pcafile,'.knn.ancestry_est'),sep='\t',quote=F)
+write.table(test,paste0(pcadir,'/',pcafile,'.knn.ancestry_est'),sep='\t',quote=F)

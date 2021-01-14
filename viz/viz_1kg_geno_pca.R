@@ -72,15 +72,15 @@ est_ancestry = function(eigenvec,g,x,y,conflevel,savepath){
      eigenvec[,paste0('est_',z)]=as.logical(point.in.polygon(points$x, points$y, ell$x, ell$y))
    } 
   #) 
-  ggsave(paste0(savepath,'ancestryPCAwithEllipse_',pcx,'vs',pcy,'.png'), width=pwidth, plot = g)
+  ggsave(paste0(savepath,'/ancestryPCAwithEllipse_',pcx,'vs',pcy,'.png'), width=pwidth, plot = g)
   return(eigenvec) 
 }
 
 ##############################################################
 
 # read in the eigenvectors, produced in PLINK
-eigenvec = data.frame(read.table(paste0(pcadir,pcafile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
-eigenval = t(data.frame(read.table(paste0(pcadir,pcafile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
+eigenvec = data.frame(read.table(paste0(pcadir,'/',pcafile,'.eigenvec'), header=FALSE, skip=0, sep=' '))
+eigenval = t(data.frame(read.table(paste0(pcadir,'/',pcafile,'.eigenval'), header=FALSE, skip=0, sep=' ')))
 rownames(eigenvec) = eigenvec[,2]
 eigenvec = eigenvec[,3:ncol(eigenvec)]
 colnames(eigenvec) = colnames(eigenval) = paste0('PC', c(1:20))
@@ -132,7 +132,7 @@ pc_pairs = lapply(PCs,function(x){
       g=ggbiplot(eigenvec,x,y,outdir)
       if(x==2 & y==1){
         annot_eigenvec=est_ancestry(eigenvec,g,x,y,conflevel,outdir)
-        write.table(annot_eigenvec,paste0(outdir,pcafile,'.eigenvec_ancestry_est'),sep='\t',quote=F)
+        write.table(annot_eigenvec,paste0(outdir,'/',pcafile,'.eigenvec_ancestry_est'),sep='\t',quote=F)
         return(annot_eigenvec)
       }
     }
