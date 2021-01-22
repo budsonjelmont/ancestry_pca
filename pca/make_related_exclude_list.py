@@ -41,4 +41,7 @@ def buildExcludeList(rows):
 exclude = rel.apply(buildExcludeList,axis=1) 
 
 resdir = os.path.dirname(relfile)
+
+# Write out all rows from related individuals & SamplesToExcludeForPCA.txt file for dropping relatives
+rel.to_csv(resdir + '/all_pihat_gt_0.2.txt',index=False,header=False)
 exclude.to_csv(resdir + '/SamplesToExcludeForPCA.txt',index=False,header=False)
